@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🍌 Ученик - Банановая викторина</title>
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         ПОДКЛЮЧЕНИЕ БИБЛИОТЕК
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         СТИЛИ - оформление страницы ученика
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: #ffe135;
+            color: #5a3e1b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #fff9c4;
+            border: 4px solid #5a3e1b;
+            border-radius: 60px 60px 30px 30px;
+            padding: 30px;
+            box-shadow: 0 20px 0 #5a3e1b;
+        }
+        
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
+        .logo {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 18px;
+            background: #ffe135;
+            border: 3px solid #5a3e1b;
+            border-radius: 16px;
+            color: #5a3e1b;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            font-family: inherit;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 30px #5a3e1b;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: #ffe135;
+            border: 3px solid #5a3e1b;
+            border-radius: 16px;
+            color: #5a3e1b;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-family: inherit;
+        }
+        
+        .btn:hover {
+            background: #fff9c4;
+            box-shadow: 0 0 30px #5a3e1b;
+            transform: translateY(-5px);
+        }
+        
+        .info-box {
+            background: #ffe135;
+            border: 2px solid #5a3e1b;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #5a3e1b;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .question-header {
+            background: #ffe135;
+            border: 2px solid #5a3e1b;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .option {
+            background: #ffe135;
+            border: 3px solid #5a3e1b;
+            border-radius: 16px;
+            padding: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: 0.3s;
+        }
+        
+        .option:hover {
+            background: #fff9c4;
+            box-shadow: 0 0 20px #5a3e1b;
+        }
+        
+        .option.selected {
+            background: #fff9c4;
+        }
+        
+        .option-letter {
+            width: 40px;
+            height: 40px;
+            background: #5a3e1b;
+            color: #ffe135;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            border-radius: 16px;
+        }
+        
+        .status.correct { 
+            background: #00aa00;
+            color: white;
+        }
+        
+        .status.wrong { 
+            background: #aa0000;
+            color: white;
+        }
+        
+        .status.waiting {
+            background: #ffe135;
+            border: 2px solid #5a3e1b;
+        }
+        
+        .error {
+            background: #aa0000;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ffe135;
+            border-top: 5px solid #5a3e1b;
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden { display: none; }
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           СТИЛИ ДЛЯ ЛИДЕРБОРДА
+           ═══════════════════════════════════════════════════════════════════ */
+        .leaderboard {
+            margin: 20px 0;
+        }
+        
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px 0;
+        }
+        
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+        }
+        
+        .podium-1 { order: 2; }
+        .podium-2 { order: 1; }
+        .podium-3 { order: 3; }
+        
+        .podium-place {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .podium-1 .podium-place {
+            background: gold;
+            color: #5a3e1b;
+            box-shadow: 0 0 30px gold;
+        }
+        
+        .podium-2 .podium-place {
+            background: silver;
+            color: #5a3e1b;
+            box-shadow: 0 0 30px silver;
+        }
+        
+        .podium-3 .podium-place {
+            background: #cd7f32;
+            color: #5a3e1b;
+            box-shadow: 0 0 30px #cd7f32;
+        }
+        
+        .podium-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .players-table {
+            margin-top: 30px;
+        }
+        
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #5a3e1b;
+        }
+        
+        .player-rank {
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .player-name {
+            font-size: 1.1rem;
+            flex: 1;
+        }
+        
+        .player-score {
+            font-size: 1.2rem;
+            color: #5a3e1b;
+            font-weight: bold;
+        }
+        
+        .top-3-divider {
+            margin: 20px 0;
+            text-align: center;
+            opacity: 0.5;
+        }
+        
+        .celebration {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 3rem;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ЭКРАН ВХОДА -->
+        <div id="joinScreen" class="screen active">
+            <div class="logo">🍌</div>
+            <h1>БАНАНОВАЯ<br>ВИКТОРИНА</h1>
+            <div id="errorContainer"></div>
+            <input type="text" id="playerName" placeholder="Твоё имя">
+            <input type="text" id="gameCode" placeholder="Код игры">
+            <button id="joinButton" class="btn">🍌 ПОДКЛЮЧИТЬСЯ</button>
+        </div>
+
+        <!-- ЭКРАН ОЖИДАНИЯ -->
+        <div id="waitingScreen" class="screen">
+            <div class="logo">⏳</div>
+            <h2>ОЖИДАНИЕ...</h2>
+            <div class="loader"></div>
+            <div class="info-box">
+                <div class="info-item">
+                    <span>🍌 Участник:</span>
+                    <strong id="displayName">-</strong>
+                </div>
+                <div class="info-item">
+                    <span>🍌 Код:</span>
+                    <strong id="displayCode">-</strong>
+                </div>
+                <div class="info-item">
+                    <span>🍌 Очки:</span>
+                    <strong id="displayScore">0</strong>
+                </div>
+            </div>
+            <button onclick="leaveGame()" class="btn">🚪 ВЫЙТИ</button>
+        </div>
+
+        <!-- ЭКРАН ВОПРОСА -->
+        <div id="questionScreen" class="screen">
+            <div class="question-header">
+                <span>🍌 БАНАНЫ</span>
+                <span id="questionCounter">1/10</span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+            <div class="status waiting" id="answerStatus">⏳ Выбери ответ</div>
+        </div>
+
+        <!-- ЭКРАН ЛИДЕРБОРДА -->
+        <div id="leaderboardScreen" class="screen">
+            <div class="celebration">🍌</div>
+            <h2>РЕЗУЛЬТАТЫ</h2>
+            <div class="leaderboard" id="leaderboard"></div>
+            <button onclick="playAgain()" class="btn">🔄 ИГРАТЬ СНОВА</button>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        // МАССИВ ВОПРОСОВ - ДОЛЖЕН СОВПАДАТЬ С teacher.html
+        // ═══════════════════════════════════════════════════════════════════════
+        const QUESTIONS = [
+            { id: 1, text: "🍌 Какого цвета спелый банан?", options: ["Красный", "Зелёный", "Жёлтый", "Синий"], correct: 2, points: 1 },
+            { id: 2, text: "🍌 Банан - это...", options: ["Фрукт", "Овощ", "Ягода", "Орех"], correct: 2, points: 2 },
+            { id: 3, text: "🍌 Сколько в среднем калорий в одном банане?", options: ["50", "100", "150", "200"], correct: 1, points: 2 },
+            { id: 4, text: "🍌 Какая страна является крупнейшим производителем бананов?", options: ["Бразилия", "Индия", "Китай", "Эквадор"], correct: 1, points: 3 },
+            { id: 5, text: "🍌 Бананы растут на...", options: ["Деревьях", "Кустах", "Траве", "Лианах"], correct: 2, points: 3 },
+            { id: 6, text: "🍌 Какой витамин особенно богат в бананах?", options: ["Витамин C", "Витамин B6", "Витамин D", "Витамин A"], correct: 1, points: 1 },
+            { id: 7, text: "🍌 Сколько воды содержится в банане?", options: ["50%", "65%", "75%", "85%"], correct: 2, points: 2 },
+            { id: 8, text: "🍌 Как называется зелёный банан, который варят?", options: ["Платано", "Маранг", "Буру", "Саба"], correct: 0, points: 3 },
+            { id: 9, text: "🍌 В каком году был изобретён банановый сплит?", options: ["1904", "1920", "1935", "1948"], correct: 0, points: 3 },
+            { id: 10, text: "🍌 Сколько бананов съедает средний американец в год?", options: ["10 кг", "12 кг", "15 кг", "18 кг"], correct: 1, points: 2 }
+        ];
+
+        let gameCode = null;
+        let playerName = null;
+        let currentQuestion = null;
+        let hasAnswered = false;
+        let pollInterval = null;
+        let playerScore = 0;
+        let currentQuestionId = null;
+        let isQuestionScreenActive = false;
+        let gameCompleted = false;
+
+        const joinButton = document.getElementById('joinButton');
+        const errorContainer = document.getElementById('errorContainer');
+        const playerNameInput = document.getElementById('playerName');
+        const gameCodeInput = document.getElementById('gameCode');
+
+        function showError(msg) {
+            errorContainer.innerHTML = `<div class="error">${msg}</div>`;
+            setTimeout(() => errorContainer.innerHTML = '', 3000);
+        }
+
+        function switchScreen(screen) {
+            ['join', 'waiting', 'question', 'leaderboard'].forEach(s => {
+                document.getElementById(s + 'Screen').classList.remove('active');
+            });
+            document.getElementById(screen + 'Screen').classList.add('active');
+            
+            if (screen === 'question') {
+                isQuestionScreenActive = true;
+            } else {
+                isQuestionScreenActive = false;
+            }
+            
+            if (screen === 'leaderboard') {
+                loadLeaderboard();
+            }
+        }
+
+        async function loadLeaderboard() {
+            if (!gameCode) return;
+            
+            try {
+                const { data: players, error } = await SB
+                    .from('players')
+                    .select('name, score')
+                    .eq('game_code', gameCode)
+                    .order('score', { ascending: false });
+                
+                if (error) throw error;
+                
+                const leaderboardDiv = document.getElementById('leaderboard');
+                
+                if (!players || players.length === 0) {
+                    leaderboardDiv.innerHTML = '<p>🍌 Нет участников</p>';
+                    return;
+                }
+                
+                const top3 = players.slice(0, 3);
+                const others = players.slice(3);
+                
+                let html = '';
+                
+                if (top3.length > 0) {
+                    html += '<div class="podium">';
+                    
+                    const podiumOrder = [1, 0, 2];
+                    
+                    podiumOrder.forEach((idx, position) => {
+                        if (idx < top3.length) {
+                            const player = top3[idx];
+                            const place = idx + 1;
+                            const placeClass = place === 1 ? 'podium-1' : place === 2 ? 'podium-2' : 'podium-3';
+                            
+                            html += `
+                                <div class="podium-item ${placeClass}">
+                                    <div class="podium-place">${place}</div>
+                                    <div class="podium-name">${player.name}</div>
+                                    <div class="podium-score">${player.score}</div>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    html += '</div>';
+                }
+                
+                if (others.length > 0) {
+                    html += '<div class="top-3-divider">🍌 🍌 🍌</div>';
+                    html += '<div class="players-table">';
+                    
+                    others.forEach((player, index) => {
+                        const rank = index + 4;
+                        html += `
+                            <div class="player-row">
+                                <span class="player-rank">#${rank}</span>
+                                <span class="player-name">${player.name}</span>
+                                <span class="player-score">${player.score}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                }
+                
+                leaderboardDiv.innerHTML = html;
+                
+            } catch (e) {
+                console.error('Ошибка загрузки лидерборда:', e);
+            }
+        }
+
+        joinButton.addEventListener('click', async () => {
+            const name = playerNameInput.value.trim();
+            const code = gameCodeInput.value.trim();
+            
+            if (!name || !code) {
+                showError("Введите имя и код");
+                return;
+            }
+            
+            try {
+                const { error } = await SB
+                    .from('players')
+                    .insert({
+                        game_code: code,
+                        name: name,
+                        score: 0,
+                        answered: false,
+                        joined_at: Date.now()
+                    });
+                
+                if (error) throw error;
+                
+                gameCode = code;
+                playerName = name;
+                
+                document.getElementById('displayName').innerText = name;
+                document.getElementById('displayCode').innerText = code;
+                switchScreen('waiting');
+                
+                if (pollInterval) clearInterval(pollInterval);
+                pollInterval = setInterval(checkGameStatus, 2000);
+                
+            } catch (e) {
+                showError(e.message);
+            }
+        });
+
+        async function checkGameStatus() {
+            if (!gameCode) return;
+            
+            try {
+                const { data, error } = await SB
+                    .from('games')
+                    .select('status, current_question')
+                    .eq('code', gameCode)
+                    .single();
+                
+                if (error) {
+                    console.log('Игра не найдена или ошибка:', error.message);
+                    return;
+                }
+                
+                if (data) {
+                    if (data.status === 'finished' && !gameCompleted) {
+                        gameCompleted = true;
+                        clearInterval(pollInterval);
+                        switchScreen('leaderboard');
+                    }
+                    else if (data.status === 'active' && data.current_question) {
+                        if (data.current_question !== currentQuestionId) {
+                            console.log('Новый вопрос:', data.current_question);
+                            currentQuestionId = data.current_question;
+                            hasAnswered = false;
+                            loadQuestion(data.current_question);
+                            switchScreen('question');
+                        }
+                    } 
+                    else if (data.status !== 'active' && isQuestionScreenActive && !gameCompleted) {
+                        console.log('Игра завершена, показываем лидерборд');
+                        gameCompleted = true;
+                        clearInterval(pollInterval);
+                        switchScreen('leaderboard');
+                    }
+                }
+            } catch (e) {
+                console.error('Ошибка при проверке игры:', e);
+            }
+        }
+
+        function loadQuestion(questionId) {
+            const question = QUESTIONS.find(q => q.id === questionId);
+            if (!question) return;
+            
+            currentQuestion = question;
+            
+            document.getElementById('questionText').innerText = question.text;
+            document.getElementById('questionCounter').innerText = `${questionId}/${QUESTIONS.length}`;
+            
+            const optionsHtml = question.options.map((opt, i) => `
+                <div class="option" onclick="selectAnswer(${i})">
+                    <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                    <div>${opt}</div>
+                </div>
+            `).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+            document.getElementById('answerStatus').innerHTML = '⏳ Выбери ответ';
+            document.getElementById('answerStatus').className = 'status waiting';
+        }
+
+        window.selectAnswer = async (index) => {
+            if (hasAnswered || !currentQuestion || !gameCode || !playerName) return;
+            
+            hasAnswered = true;
+            
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                if (i === index) opt.classList.add('selected');
+            });
+            
+            const isCorrect = (index === currentQuestion.correct);
+            
+            const statusDiv = document.getElementById('answerStatus');
+            statusDiv.textContent = isCorrect ? "✅ ПРАВИЛЬНО!" : "❌ НЕПРАВИЛЬНО";
+            statusDiv.className = isCorrect ? "status correct" : "status wrong";
+            
+            try {
+                const { error: answerError } = await SB
+                    .from('answers')
+                    .insert({
+                        game_code: gameCode,
+                        question_id: currentQuestion.id,
+                        player_name: playerName,
+                        answer_index: index,
+                        is_correct: isCorrect,
+                        answered_at: Date.now()
+                    });
+                
+                if (answerError) throw answerError;
+                
+                if (isCorrect) {
+                    playerScore += currentQuestion.points;
+                    document.getElementById('displayScore').innerText = playerScore;
+                    
+                    await SB
+                        .from('players')
+                        .update({ 
+                            score: playerScore, 
+                            answered: true 
+                        })
+                        .eq('game_code', gameCode)
+                        .eq('name', playerName);
+                } else {
+                    await SB
+                        .from('players')
+                        .update({ answered: true })
+                        .eq('game_code', gameCode)
+                        .eq('name', playerName);
+                }
+                
+            } catch (e) {
+                console.error('Ошибка сохранения ответа:', e);
+                hasAnswered = false;
+            }
+        };
+
+        window.leaveGame = () => {
+            if (pollInterval) clearInterval(pollInterval);
+            resetGameState();
+            switchScreen('join');
+        };
+
+        window.playAgain = () => {
+            resetGameState();
+            switchScreen('join');
+        };
+
+        function resetGameState() {
+            gameCode = null;
+            playerName = null;
+            currentQuestion = null;
+            hasAnswered = false;
+            currentQuestionId = null;
+            playerScore = 0;
+            isQuestionScreenActive = false;
+            gameCompleted = false;
+            playerNameInput.value = '';
+            gameCodeInput.value = '';
+            document.getElementById('displayScore').innerText = '0';
+        }
+    </script>
+</body>
+</html>
