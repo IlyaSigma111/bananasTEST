@@ -9,42 +9,44 @@
     <script src="config.js"></script>
     
     <!-- ═══════════════════════════════════════════════════════════════════════
-         БАНАНОВЫЙ ГЛАССМОРФИЗМ - ПРИНЦИПЫ:
+         БАНАНОВЫЙ ГЛАССМОРФИЗМ - ВЫРАЗИТЕЛЬНЫЙ ДИЗАЙН
          
-         1. Все панели полупрозрачные (backdrop-filter: blur)
-         2. Границы коричневые, мягкие
-         3. Активные элементы подсвечиваются жёлтым
-         4. Формы скруглённые (как банан)
-         5. Тени золотистые
+         ПРИНЦИПЫ ДИЗАЙНА:
+         1. ВЫСОКИЙ КОНТРАСТ - тёмные элементы на светлом фоне
+         2. ЧЁТКИЕ ГРАНИЦЫ - элементы не сливаются
+         3. ЯРКИЕ АКЦЕНТЫ - активные элементы выделяются
+         4. ПОНЯТНАЯ ИЕРАРХИЯ - важное крупнее и ярче
+         5. ЦВЕТОВОЕ КОДИРОВАНИЕ - сложность вопросов видна сразу
          
-         Для новой викторины нужно:
-         - Изменить :root цвета
-         - Заменить массив QUESTIONS
-         - Изменить QUIZ_ID в config.js
          ═══════════════════════════════════════════════════════════════════════ -->
     <style>
         /* ═══════════════════════════════════════════════════════════════════
-           БАНАНОВАЯ ЦВЕТОВАЯ СХЕМА
+           ЯРКАЯ БАНАНОВАЯ ПАЛИТРА
            ═══════════════════════════════════════════════════════════════════ */
         :root {
-            --banana-yellow: #FFE135;
-            --banana-gold: #FFD700;
-            --banana-dark: #8B4513;
-            --banana-cream: #FFF9C4;
-            --banana-green: #6B8E23;
+            --banana-yellow: #FFD700;        /* Ярко-золотой */
+            --banana-bright: #FFE55C;         /* Светло-жёлтый */
+            --banana-dark: #8B4513;            /* Тёмно-коричневый */
+            --banana-brown: #A0522D;            /* Коричневый */
+            --banana-cream: #FFF9E6;            /* Кремовый */
             
-            --text-light: #FFF9C4;
-            --text-dark: #5A3E1B;
+            --text-dark: #4A2C1A;                /* Тёмный текст */
+            --text-light: #FFF9E6;                /* Светлый текст */
             
-            --bg-gradient-start: #FFF9C4;
+            --bg-gradient-start: #FFF9E6;
             --bg-gradient-end: #FFD700;
             
             /* Параметры глассморфизма */
-            --glass-bg: rgba(255, 249, 196, 0.15);
-            --glass-bg-darker: rgba(139, 69, 19, 0.1);
-            --glass-border: rgba(139, 69, 19, 0.3);
-            --glass-blur: 10px;
-            --glass-shadow: 0 8px 32px 0 rgba(255, 215, 0, 0.3);
+            --glass-bg: rgba(255, 250, 240, 0.4);
+            --glass-bg-dark: rgba(139, 69, 19, 0.15);
+            --glass-border: rgba(139, 69, 19, 0.5);
+            --glass-blur: 12px;
+            --glass-shadow: 0 8px 32px rgba(139, 69, 19, 0.3);
+            
+            /* Цвета сложности */
+            --easy-color: #2E8B57;      /* Зелёный - легко */
+            --medium-color: #FF8C00;     /* Оранжевый - средне */
+            --hard-color: #DC143C;        /* Красный - сложно */
         }
         
         * {
@@ -54,7 +56,7 @@
         }
         
         body {
-            font-family: 'Segoe UI', 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             overflow: hidden;
             
@@ -71,7 +73,7 @@
         }
         
         /* ═══════════════════════════════════════════════════════════════════
-           ШАПКА
+           ШАПКА - яркая и контрастная
            ═══════════════════════════════════════════════════════════════════ */
         .teacher-header {
             padding: 15px 30px;
@@ -83,73 +85,73 @@
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border-bottom: 2px solid var(--glass-border);
+            border-bottom: 3px solid var(--banana-dark);
+            box-shadow: 0 4px 10px rgba(139, 69, 19, 0.2);
         }
         
         .header-left h1 {
-            font-size: 1.5rem;
-            color: var(--text-dark);
+            font-size: 1.8rem;
+            color: var(--banana-dark);
+            text-shadow: 2px 2px 0 var(--banana-yellow);
         }
         
         .game-code-box {
-            padding: 10px 20px;
+            padding: 12px 25px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             
-            background: var(--glass-bg-darker);
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
+            background: var(--banana-dark);
+            border-radius: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .game-code-box span {
+            color: var(--banana-yellow);
+            font-weight: bold;
+            font-size: 1.1rem;
         }
         
         .code-display {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             font-weight: 900;
-            color: var(--banana-dark);
-            letter-spacing: 2px;
-            min-width: 150px;
+            color: var(--banana-yellow);
+            letter-spacing: 3px;
+            min-width: 180px;
             text-align: center;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
         }
         
-        /* ═══════════════════════════════════════════════════════════════════
-           КНОПКИ
-           ═══════════════════════════════════════════════════════════════════ */
         .glass-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
+            gap: 10px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 40px;
             cursor: pointer;
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
-            color: var(--text-dark);
+            background: var(--banana-yellow);
+            color: var(--banana-dark);
             transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         
         .glass-btn:hover {
-            border-color: var(--banana-dark);
-            background: var(--banana-yellow);
-            color: var(--text-dark);
-            box-shadow: 0 0 30px var(--banana-yellow);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
+            background: #FFE55C;
         }
         
         .glass-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            pointer-events: none;
+            transform: none;
+            box-shadow: none;
         }
         
-        /* ═══════════════════════════════════════════════════════════════════
-           ОСНОВНОЙ КОНТЕНТ
-           ═══════════════════════════════════════════════════════════════════ */
         .main-content {
             display: flex;
             flex: 1;
@@ -167,7 +169,7 @@
         }
         
         /* ═══════════════════════════════════════════════════════════════════
-           ПАНЕЛИ
+           ПАНЕЛИ - с чёткими границами
            ═══════════════════════════════════════════════════════════════════ */
         .glass-panel {
             padding: 20px;
@@ -179,28 +181,39 @@
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 1px solid var(--glass-border);
+            border: 2px solid var(--banana-dark);
+            box-shadow: var(--glass-shadow);
         }
         
         .glass-panel h2 {
             color: var(--banana-dark);
             margin-bottom: 15px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-bottom: 2px solid var(--banana-dark);
+            padding-bottom: 10px;
         }
         
         .control-buttons {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 12px;
         }
         
         .control-buttons .glass-btn {
             padding: 15px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             justify-content: flex-start;
+            background: var(--glass-bg-dark);
+            color: var(--text-dark);
+            border: 2px solid var(--banana-dark);
+        }
+        
+        .control-buttons .glass-btn:hover {
+            background: var(--banana-yellow);
+            border-color: var(--banana-dark);
         }
         
         .info-block {
@@ -208,31 +221,32 @@
             margin-top: 15px;
             border-radius: 20px;
             
-            background: var(--glass-bg-darker);
-            border: 1px solid var(--glass-border);
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--banana-dark);
         }
         
         .info-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
+            font-size: 1.1rem;
             color: var(--text-dark);
         }
         
         .info-value {
             color: var(--banana-dark);
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
         
         /* ═══════════════════════════════════════════════════════════════════
-           СТАТИСТИКА
+           СТАТИСТИКА - крупные цифры
            ═══════════════════════════════════════════════════════════════════ */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 10px 0;
+            gap: 12px;
+            margin: 15px 0;
         }
         
         .stat-card {
@@ -240,13 +254,13 @@
             text-align: center;
             border-radius: 20px;
             
-            background: var(--glass-bg-darker);
-            border: 1px solid var(--glass-border);
+            background: var(--glass-bg-dark);
+            border: 2px solid var(--banana-dark);
             color: var(--text-dark);
         }
         
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: bold;
             color: var(--banana-dark);
         }
@@ -269,22 +283,23 @@
         .player-card {
             padding: 15px;
             text-align: center;
-            border-radius: 30px;
+            border-radius: 20px;
             transition: 0.3s;
             
-            background: var(--glass-bg-darker);
-            border: 2px solid var(--glass-border);
+            background: var(--glass-bg-dark);
+            border: 3px solid var(--banana-dark);
             color: var(--text-dark);
         }
         
         .player-card.answered {
-            border-color: var(--banana-gold);
-            box-shadow: 0 0 15px var(--banana-gold);
+            border-color: var(--banana-yellow);
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 20px var(--banana-yellow);
         }
         
         .player-avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: var(--banana-yellow);
             color: var(--banana-dark);
             border-radius: 50%;
@@ -292,57 +307,71 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 900;
+            border: 3px solid var(--banana-dark);
         }
         
         /* ═══════════════════════════════════════════════════════════════════
-           СПИСОК ВОПРОСОВ
+           СПИСОК ВОПРОСОВ - ОТСОРТИРОВАН ПО СЛОЖНОСТИ
            ═══════════════════════════════════════════════════════════════════ */
         .questions-list {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
         
         .question-item {
-            padding: 15px 5px;
+            padding: 15px 8px;
             text-align: center;
             border-radius: 20px;
             cursor: pointer;
+            transition: 0.3s;
             
-            background: var(--glass-bg-darker);
-            border: 2px solid var(--glass-border);
+            background: var(--glass-bg-dark);
+            border: 3px solid var(--banana-dark);
             color: var(--text-dark);
         }
         
         .question-item:hover {
+            transform: scale(1.05);
             border-color: var(--banana-yellow);
-            box-shadow: 0 0 15px var(--banana-yellow);
+            box-shadow: 0 0 20px var(--banana-yellow);
         }
         
         .question-item.active {
-            border-color: var(--banana-gold);
-            background: var(--glass-bg);
+            border-color: var(--banana-yellow);
+            background: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 25px var(--banana-yellow);
         }
         
         .question-number {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 5px;
         }
         
+        .question-difficulty {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .question-status {
+            font-size: 1.3rem;
+        }
+        
         .empty-state {
             text-align: center;
-            padding: 30px 20px;
+            padding: 40px 20px;
             color: var(--text-dark);
-            opacity: 0.5;
+            font-size: 1.2rem;
         }
         
         .hidden { display: none; }
         
         /* ═══════════════════════════════════════════════════════════════════
-           РЕЖИМ ПРЕЗЕНТАЦИИ
+           РЕЖИМ ПРЕЗЕНТАЦИИ - С КНОПКОЙ "ПОКАЗАТЬ ОТВЕТ"
            ═══════════════════════════════════════════════════════════════════ */
         #presentationMode {
             position: fixed;
@@ -364,15 +393,23 @@
         }
         
         .presentation-header {
-            padding: 15px 30px;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             
-            background: var(--glass-bg);
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
-            border-bottom: 2px solid var(--glass-border);
-            color: var(--text-dark);
+            background: var(--banana-dark);
+            color: var(--banana-yellow);
+            border-bottom: 4px solid var(--banana-yellow);
+        }
+        
+        .presentation-header span {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .presentation-header .stats {
+            font-size: 1.4rem;
         }
         
         .presentation-content {
@@ -384,7 +421,7 @@
         }
         
         .presentation-question {
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
             padding: 60px;
             text-align: center;
@@ -392,7 +429,7 @@
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 2px solid var(--glass-border);
+            border: 4px solid var(--banana-dark);
             border-radius: 60px;
             box-shadow: var(--glass-shadow);
         }
@@ -402,31 +439,42 @@
             line-height: 1.4;
             margin-bottom: 40px;
             color: var(--banana-dark);
+            text-shadow: 3px 3px 0 var(--banana-yellow);
         }
         
-        .stats-box {
-            display: inline-block;
-            padding: 20px 40px;
-            margin-top: 30px;
-            font-size: 2rem;
-            
-            background: var(--glass-bg-darker);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            color: var(--text-dark);
-        }
-        
-        .stats-box span {
+        .presentation-answer {
+            font-size: 3rem;
             color: var(--banana-dark);
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 0 15px;
+            background: var(--banana-yellow);
+            padding: 30px;
+            border-radius: 40px;
+            margin: 30px 0;
+            border: 4px solid var(--banana-dark);
+            display: none;
+        }
+        
+        .presentation-answer.show {
+            display: block;
+            animation: popIn 0.5s;
         }
         
         .presentation-controls {
-            padding: 20px;
+            padding: 30px;
             text-align: center;
-            border-top: 2px solid var(--glass-border);
+            border-top: 4px solid var(--banana-dark);
+            background: var(--glass-bg);
+        }
+        
+        .presentation-controls .glass-btn {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -434,7 +482,7 @@
     <div id="mainInterface">
         <header class="teacher-header">
             <div class="header-left">
-                <h1>🍌 ПАНЕЛЬ УЧИТЕЛЯ</h1>
+                <h1>🍌 БАНАНОВАЯ ВИКТОРИНА</h1>
             </div>
             <div class="game-code-box">
                 <span>🍌 КОД:</span>
@@ -452,20 +500,20 @@
                     
                     <div id="startSection">
                         <button onclick="createGame()" class="glass-btn control-buttons">
-                            <i class="fas fa-plus-circle"></i> 🍌 СОЗДАТЬ ИГРУ
+                            <i class="fas fa-plus-circle"></i> 🍌 СОЗДАТЬ НОВУЮ ИГРУ
                         </button>
                     </div>
 
                     <div id="gameControls" class="hidden">
                         <div class="control-buttons">
-                            <button onclick="showQuestionOnBoard(0)" id="showFirstBtn" class="glass-btn">
-                                <i class="fas fa-play"></i> ПОКАЗАТЬ ВОПРОС 1
+                            <button onclick="showQuestionOnBoard(currentQuestionIndex)" id="showCurrentBtn" class="glass-btn">
+                                <i class="fas fa-play"></i> ПОКАЗАТЬ ТЕКУЩИЙ ВОПРОС
                             </button>
                             <button onclick="showAnswerOnBoard()" id="showAnswerBtn" class="glass-btn" disabled>
                                 <i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ
                             </button>
                             <button onclick="nextQuestion()" id="nextBtn" class="glass-btn" disabled>
-                                <i class="fas fa-forward"></i> СЛЕДУЮЩИЙ
+                                <i class="fas fa-forward"></i> СЛЕДУЮЩИЙ ВОПРОС
                             </button>
                             <button onclick="finishGame()" class="glass-btn">
                                 <i class="fas fa-flag-checkered"></i> ЗАВЕРШИТЬ ИГРУ
@@ -528,48 +576,57 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════
-         РЕЖИМ ПРЕЗЕНТАЦИИ
+         РЕЖИМ ПРЕЗЕНТАЦИИ С КНОПКОЙ ОТВЕТА
          ═══════════════════════════════════════════════════════════════════════ -->
     <div id="presentationMode">
         <div class="presentation-header">
             <span>🍌 ВОПРОС <span id="presQNum">1</span>/10</span>
-            <span>Ответили: <span id="presAnswered">0</span> | Правильно: <span id="presCorrect">0</span></span>
+            <span class="stats">Ответили: <span id="presAnswered">0</span> | Правильно: <span id="presCorrect">0</span></span>
         </div>
         <div class="presentation-content">
             <div class="presentation-question">
                 <h2 id="presQuestionText"></h2>
-                <div class="stats-box">
-                    <span id="presAnsweredBig">0</span> из <span id="presTotalBig">0</span> ответили<br>
-                    <span id="presCorrectBig">0</span> правильно
-                </div>
+                <div id="presAnswerBox" class="presentation-answer"></div>
             </div>
         </div>
         <div class="presentation-controls">
-            <button class="glass-btn" onclick="closePresentation()">ЗАКРЫТЬ</button>
+            <button class="glass-btn" onclick="showAnswerOnBoard()" id="presShowAnswerBtn">
+                <i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ
+            </button>
+            <button class="glass-btn" onclick="closePresentation()">
+                <i class="fas fa-times"></i> ЗАКРЫТЬ
+            </button>
         </div>
     </div>
 
     <script>
         // ═══════════════════════════════════════════════════════════════════════
-        // 10 ВОПРОСОВ О БАНАНАХ
+        // 10 ВОПРОСОВ О БАНАНАХ - ОТСОРТИРОВАНЫ ПО СЛОЖНОСТИ!
+        // Сначала лёгкие (1-4), потом средние (5-7), потом сложные (8-10)
         // ═══════════════════════════════════════════════════════════════════════
         const QUESTIONS = [
-            { id: 1, text: "🍌 Какого цвета спелый банан?", options: ["Красный", "Зелёный", "Жёлтый", "Синий"], correct: 2, points: 1, difficulty: "easy" },
-            { id: 2, text: "🍌 Банан - это...", options: ["Фрукт", "Овощ", "Ягода", "Орех"], correct: 2, points: 2, difficulty: "medium" },
-            { id: 3, text: "🍌 Сколько калорий в среднем банане?", options: ["50", "100", "150", "200"], correct: 1, points: 2, difficulty: "medium" },
-            { id: 4, text: "🍌 Какая страна производит больше всего бананов?", options: ["Бразилия", "Индия", "Китай", "Эквадор"], correct: 1, points: 3, difficulty: "hard" },
-            { id: 5, text: "🍌 Бананы растут на...", options: ["Деревьях", "Кустах", "Траве", "Лианах"], correct: 2, points: 3, difficulty: "hard" },
-            { id: 6, text: "🍌 Какой витамин особенно богат в бананах?", options: ["Витамин C", "Витамин B6", "Витамин D", "Витамин A"], correct: 1, points: 1, difficulty: "easy" },
+            // ЛЁГКИЕ (easy) - 4 вопроса
+            { id: 1, text: "🍌 Какого цвета спелый банан?", options: ["🔴 Красный", "🟢 Зелёный", "🟡 Жёлтый", "🔵 Синий"], correct: 2, points: 1, difficulty: "easy" },
+            { id: 2, text: "🍌 Банан - это...", options: ["🍎 Фрукт", "🥕 Овощ", "🍓 Ягода", "🥜 Орех"], correct: 2, points: 1, difficulty: "easy" },
+            { id: 3, text: "🍌 Какой формы банан?", options: ["🟠 Круглый", "📏 Прямой", "🌙 Изогнутый", "⬛ Квадратный"], correct: 2, points: 1, difficulty: "easy" },
+            { id: 4, text: "🍌 Что растёт на банановой пальме?", options: ["🍌 Бананы", "🥥 Кокосы", "🍍 Ананасы", "🥭 Манго"], correct: 0, points: 1, difficulty: "easy" },
+            
+            // СРЕДНИЕ (medium) - 3 вопроса
+            { id: 5, text: "🍌 Сколько калорий в среднем банане?", options: ["50 ккал", "100 ккал", "150 ккал", "200 ккал"], correct: 1, points: 2, difficulty: "medium" },
+            { id: 6, text: "🍌 Какой витамин особенно богат в бананах?", options: ["Витамин C", "Витамин B6", "Витамин D", "Витамин A"], correct: 1, points: 2, difficulty: "medium" },
             { id: 7, text: "🍌 Сколько воды в банане?", options: ["50%", "65%", "75%", "85%"], correct: 2, points: 2, difficulty: "medium" },
-            { id: 8, text: "🍌 Как называют зелёный банан для варки?", options: ["Платано", "Маранг", "Буру", "Саба"], correct: 0, points: 3, difficulty: "hard" },
-            { id: 9, text: "🍌 Когда изобрели банановый сплит?", options: ["1904", "1920", "1935", "1948"], correct: 0, points: 3, difficulty: "hard" },
-            { id: 10, text: "🍌 Сколько бананов съедает американец в год?", options: ["10 кг", "12 кг", "15 кг", "18 кг"], correct: 1, points: 2, difficulty: "medium" }
+            
+            // СЛОЖНЫЕ (hard) - 3 вопроса
+            { id: 8, text: "🍌 Какая страна производит больше всего бананов?", options: ["🇧🇷 Бразилия", "🇮🇳 Индия", "🇨🇳 Китай", "🇪🇨 Эквадор"], correct: 1, points: 3, difficulty: "hard" },
+            { id: 9, text: "🍌 Бананы растут на...", options: ["🌳 Деревьях", "🌿 Кустах", "🌱 Траве", "🍃 Лианах"], correct: 2, points: 3, difficulty: "hard" },
+            { id: 10, text: "🍌 Как называют зелёный банан для варки?", options: ["Платано", "Маранг", "Буру", "Саба"], correct: 0, points: 3, difficulty: "hard" }
         ];
 
         let gameCode = null;
         let currentQuestionIndex = 0;
         let pollInterval = null;
         let statsInterval = null;
+        let answerShown = false;
 
         async function createGame() {
             try {
@@ -606,9 +663,9 @@
         function renderQuestions() {
             const list = document.getElementById('questionsList');
             list.innerHTML = QUESTIONS.map((q, i) => {
-                let difficultyColor = q.difficulty === 'easy' ? '#2E8B57' : q.difficulty === 'medium' ? '#FFA500' : '#DC143C';
-                let difficultyText = q.difficulty.toUpperCase();
-                let status = i === currentQuestionIndex ? '🍌' : i < currentQuestionIndex ? '✅' : '⏳';
+                let difficultyColor = q.difficulty === 'easy' ? '#2E8B57' : q.difficulty === 'medium' ? '#FF8C00' : '#DC143C';
+                let difficultyText = q.difficulty === 'easy' ? '🍃 ЛЁГКИЙ' : q.difficulty === 'medium' ? '⭐ СРЕДНИЙ' : '🔥 СЛОЖНЫЙ';
+                let status = i === currentQuestionIndex ? '▶️' : i < currentQuestionIndex ? '✅' : '⏳';
                 
                 return `
                     <div class="question-item ${i === currentQuestionIndex ? 'active' : ''}" 
@@ -623,6 +680,7 @@
 
         async function showQuestionOnBoard(index) {
             currentQuestionIndex = index;
+            answerShown = false;
             renderQuestions();
             
             const q = QUESTIONS[index];
@@ -638,7 +696,13 @@
             document.getElementById('presQNum').innerText = index + 1;
             document.getElementById('presQuestionText').innerText = q.text;
             
+            // Скрываем блок с ответом
+            document.getElementById('presAnswerBox').classList.remove('show');
+            document.getElementById('presAnswerBox').innerHTML = '';
+            
             document.getElementById('presentationMode').classList.add('active');
+            
+            // Активируем кнопки
             document.getElementById('showAnswerBtn').disabled = false;
             document.getElementById('nextBtn').disabled = true;
             
@@ -646,8 +710,21 @@
         }
 
         function showAnswerOnBoard() {
+            if (answerShown) return;
+            
+            const q = QUESTIONS[currentQuestionIndex];
+            const correctAnswer = q.options[q.correct];
+            
+            // Показываем ответ в презентации
+            const answerBox = document.getElementById('presAnswerBox');
+            answerBox.innerHTML = `✅ ПРАВИЛЬНЫЙ ОТВЕТ:<br>${correctAnswer}`;
+            answerBox.classList.add('show');
+            
+            // Обновляем кнопки
             document.getElementById('showAnswerBtn').disabled = true;
             document.getElementById('nextBtn').disabled = false;
+            
+            answerShown = true;
         }
 
         function nextQuestion() {
@@ -696,7 +773,7 @@
                         <div class="player-card ${p.answered ? 'answered' : ''}">
                             <div class="player-avatar">${p.name[0]}</div>
                             <div class="player-name">${p.name}</div>
-                            <div>🍌 ${p.score || 0}</div>
+                            <div style="font-size: 1.2rem; font-weight: bold;">🍌 ${p.score || 0}</div>
                         </div>
                     `).join('');
                 }
@@ -737,9 +814,6 @@
                 if (document.getElementById('presentationMode').classList.contains('active')) {
                     document.getElementById('presAnswered').innerText = answeredCount;
                     document.getElementById('presCorrect').innerText = correctCount;
-                    document.getElementById('presAnsweredBig').innerText = answeredCount;
-                    document.getElementById('presCorrectBig').innerText = correctCount;
-                    document.getElementById('presTotalBig').innerText = totalPlayers;
                 }
             } catch (e) {
                 console.error('Ошибка обновления статистики:', e);
@@ -763,6 +837,7 @@
             if (statsInterval) clearInterval(statsInterval);
             gameCode = null;
             currentQuestionIndex = 0;
+            answerShown = false;
             document.getElementById('startSection').style.display = 'block';
             document.getElementById('gameControls').classList.add('hidden');
             document.getElementById('gameCode').innerText = '----';
