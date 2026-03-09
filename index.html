@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍌 Банановая викторина</title>
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         СТИЛИ - оформление главной страницы
+         Здесь можно менять цвета, размеры, шрифты под тематику викторины
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #ffe135; /* Жёлтый как банан */
+            color: #5a3e1b; /* Коричневый как банан */
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .container {
+            text-align: center;
+            border: 4px solid #5a3e1b;
+            padding: 50px;
+            border-radius: 60px 60px 30px 30px;
+            background: #fff9c4;
+            box-shadow: 0 20px 0 #5a3e1b;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 0 #5a3e1b;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 50px;
+            opacity: 0.8;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .btn {
+            display: block;
+            padding: 20px;
+            background: #ffe135;
+            color: #5a3e1b;
+            border: 3px solid #5a3e1b;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 8px 0 #5a3e1b;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 13px 0 #5a3e1b;
+        }
+        
+        .btn.teacher {
+            background: #8b4513;
+            color: #ffe135;
+            border-color: #5a3e1b;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            font-size: 0.9rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍌 БАНАНОВАЯ<br>ВИКТОРИНА</h1>
+        <p class="subtitle">Проверь свои знания о бананах!</p>
+        
+        <div class="buttons">
+            <a href="teacher.html" class="btn teacher">👨‍🏫 УЧИТЕЛЬ</a>
+            <a href="student.html" class="btn">🧑‍🎓 УЧЕНИК</a>
+        </div>
+        
+        <div class="footer">
+            ⚡ 10 вопросов о бананах
+        </div>
+    </div>
+</body>
+</html>
