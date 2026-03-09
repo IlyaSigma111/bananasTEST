@@ -3,36 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учитель - Викторина</title>
+    <title>🍌 Учитель - Банановая викторина</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     
     <!-- ═══════════════════════════════════════════════════════════════════════
-         ГЛАССМОРФИЗМ + ТЕМАТИЧЕСКИЙ ДИЗАЙН
-         :root - менять цвета под тему викторины
+         БАНАНОВЫЙ ГЛАССМОРФИЗМ - ПРИНЦИПЫ:
+         
+         1. Все панели полупрозрачные (backdrop-filter: blur)
+         2. Границы коричневые, мягкие
+         3. Активные элементы подсвечиваются жёлтым
+         4. Формы скруглённые (как банан)
+         5. Тени золотистые
+         
+         Для новой викторины нужно:
+         - Изменить :root цвета
+         - Заменить массив QUESTIONS
+         - Изменить QUIZ_ID в config.js
          ═══════════════════════════════════════════════════════════════════════ -->
     <style>
         /* ═══════════════════════════════════════════════════════════════════
-           ЦВЕТА ТЕМЫ - МЕНЯТЬ ПОД КОНКРЕТНУЮ ВИКТОРИНУ
+           БАНАНОВАЯ ЦВЕТОВАЯ СХЕМА
            ═══════════════════════════════════════════════════════════════════ */
         :root {
-            /* Основные цвета темы */
-            --primary-color: #0f0;           /* Зелёный (для кибер-темы) */
-            --secondary-color: #ff00ff;       /* Розовый (акцент) */
-            --text-color: #fff;                /* Цвет текста */
-            --text-dark: #000;                 /* Тёмный текст для контраста */
+            --banana-yellow: #FFE135;
+            --banana-gold: #FFD700;
+            --banana-dark: #8B4513;
+            --banana-cream: #FFF9C4;
+            --banana-green: #6B8E23;
             
-            /* Градиент фона */
-            --bg-gradient-start: #0a0a0a;      /* Тёмно-серый */
-            --bg-gradient-end: #1a1a1a;         /* Чуть светлее */
+            --text-light: #FFF9C4;
+            --text-dark: #5A3E1B;
+            
+            --bg-gradient-start: #FFF9C4;
+            --bg-gradient-end: #FFD700;
             
             /* Параметры глассморфизма */
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-bg-darker: rgba(0, 0, 0, 0.3);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-bg: rgba(255, 249, 196, 0.15);
+            --glass-bg-darker: rgba(139, 69, 19, 0.1);
+            --glass-border: rgba(139, 69, 19, 0.3);
             --glass-blur: 10px;
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --glass-shadow: 0 8px 32px 0 rgba(255, 215, 0, 0.3);
         }
         
         * {
@@ -42,11 +54,10 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Comic Sans MS', cursive, sans-serif;
             min-height: 100vh;
             overflow: hidden;
             
-            /* Градиентный фон */
             background: linear-gradient(135deg, 
                 var(--bg-gradient-start), 
                 var(--bg-gradient-end));
@@ -69,17 +80,15 @@
             align-items: center;
             flex-shrink: 0;
             
-            /* Глассморфизм */
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 2px solid var(--glass-border);
         }
         
         .header-left h1 {
             font-size: 1.5rem;
-            color: var(--primary-color);
-            text-shadow: 0 0 10px var(--primary-color);
+            color: var(--text-dark);
         }
         
         .game-code-box {
@@ -88,18 +97,17 @@
             align-items: center;
             gap: 15px;
             
-            /* Глассморфизм */
             background: var(--glass-bg-darker);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            border-radius: 30px;
         }
         
         .code-display {
             font-size: 1.8rem;
             font-weight: 900;
-            color: var(--primary-color);
+            color: var(--banana-dark);
             letter-spacing: 2px;
             min-width: 150px;
             text-align: center;
@@ -116,18 +124,20 @@
             padding: 10px 20px;
             font-size: 0.9rem;
             border: 1px solid var(--glass-border);
-            border-radius: 10px;
+            border-radius: 30px;
             cursor: pointer;
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            color: var(--text-color);
+            color: var(--text-dark);
             transition: all 0.3s;
         }
         
         .glass-btn:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 20px var(--primary-color);
+            border-color: var(--banana-dark);
+            background: var(--banana-yellow);
+            color: var(--text-dark);
+            box-shadow: 0 0 30px var(--banana-yellow);
             transform: translateY(-2px);
         }
         
@@ -161,12 +171,11 @@
            ═══════════════════════════════════════════════════════════════════ */
         .glass-panel {
             padding: 20px;
-            border-radius: 20px;
+            border-radius: 30px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             
-            /* Глассморфизм */
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -174,7 +183,7 @@
         }
         
         .glass-panel h2 {
-            color: var(--primary-color);
+            color: var(--banana-dark);
             margin-bottom: 15px;
             font-size: 1.3rem;
             display: flex;
@@ -197,7 +206,7 @@
         .info-block {
             padding: 15px;
             margin-top: 15px;
-            border-radius: 12px;
+            border-radius: 20px;
             
             background: var(--glass-bg-darker);
             border: 1px solid var(--glass-border);
@@ -207,11 +216,11 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
-            color: var(--text-color);
+            color: var(--text-dark);
         }
         
         .info-value {
-            color: var(--primary-color);
+            color: var(--banana-dark);
             font-weight: 700;
             font-size: 1.2rem;
         }
@@ -229,17 +238,17 @@
         .stat-card {
             padding: 15px;
             text-align: center;
-            border-radius: 10px;
+            border-radius: 20px;
             
             background: var(--glass-bg-darker);
             border: 1px solid var(--glass-border);
-            color: var(--text-color);
+            color: var(--text-dark);
         }
         
         .stat-value {
             font-size: 2rem;
             font-weight: bold;
-            color: var(--primary-color);
+            color: var(--banana-dark);
         }
         
         /* ═══════════════════════════════════════════════════════════════════
@@ -260,24 +269,24 @@
         .player-card {
             padding: 15px;
             text-align: center;
-            border-radius: 16px;
+            border-radius: 30px;
             transition: 0.3s;
             
             background: var(--glass-bg-darker);
             border: 2px solid var(--glass-border);
-            color: var(--text-color);
+            color: var(--text-dark);
         }
         
         .player-card.answered {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 15px var(--secondary-color);
+            border-color: var(--banana-gold);
+            box-shadow: 0 0 15px var(--banana-gold);
         }
         
         .player-avatar {
             width: 50px;
             height: 50px;
-            background: var(--primary-color);
-            color: var(--text-dark);
+            background: var(--banana-yellow);
+            color: var(--banana-dark);
             border-radius: 50%;
             margin: 0 auto 10px;
             display: flex;
@@ -299,21 +308,21 @@
         .question-item {
             padding: 15px 5px;
             text-align: center;
-            border-radius: 12px;
+            border-radius: 20px;
             cursor: pointer;
             
             background: var(--glass-bg-darker);
             border: 2px solid var(--glass-border);
-            color: var(--text-color);
+            color: var(--text-dark);
         }
         
         .question-item:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 15px var(--primary-color);
+            border-color: var(--banana-yellow);
+            box-shadow: 0 0 15px var(--banana-yellow);
         }
         
         .question-item.active {
-            border-color: var(--secondary-color);
+            border-color: var(--banana-gold);
             background: var(--glass-bg);
         }
         
@@ -326,7 +335,7 @@
         .empty-state {
             text-align: center;
             padding: 30px 20px;
-            color: var(--text-color);
+            color: var(--text-dark);
             opacity: 0.5;
         }
         
@@ -362,8 +371,8 @@
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border-bottom: 1px solid var(--glass-border);
-            color: var(--text-color);
+            border-bottom: 2px solid var(--glass-border);
+            color: var(--text-dark);
         }
         
         .presentation-content {
@@ -383,15 +392,16 @@
             background: var(--glass-bg);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
+            border: 2px solid var(--glass-border);
+            border-radius: 60px;
+            box-shadow: var(--glass-shadow);
         }
         
         .presentation-question h2 {
             font-size: 4rem;
             line-height: 1.4;
             margin-bottom: 40px;
-            color: var(--primary-color);
+            color: var(--banana-dark);
         }
         
         .stats-box {
@@ -402,12 +412,12 @@
             
             background: var(--glass-bg-darker);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            color: var(--text-color);
+            border-radius: 40px;
+            color: var(--text-dark);
         }
         
         .stats-box span {
-            color: var(--primary-color);
+            color: var(--banana-dark);
             font-size: 2.5rem;
             font-weight: bold;
             margin: 0 15px;
@@ -416,7 +426,7 @@
         .presentation-controls {
             padding: 20px;
             text-align: center;
-            border-top: 1px solid var(--glass-border);
+            border-top: 2px solid var(--glass-border);
         }
     </style>
 </head>
@@ -424,10 +434,10 @@
     <div id="mainInterface">
         <header class="teacher-header">
             <div class="header-left">
-                <h1>👨‍🏫 ПАНЕЛЬ УЧИТЕЛЯ</h1>
+                <h1>🍌 ПАНЕЛЬ УЧИТЕЛЯ</h1>
             </div>
             <div class="game-code-box">
-                <span>КОД:</span>
+                <span>🍌 КОД:</span>
                 <div id="gameCode" class="code-display">----</div>
                 <a href="index.html" class="glass-btn">
                     <i class="fas fa-home"></i> Главная
@@ -442,7 +452,7 @@
                     
                     <div id="startSection">
                         <button onclick="createGame()" class="glass-btn control-buttons">
-                            <i class="fas fa-plus-circle"></i> СОЗДАТЬ ИГРУ
+                            <i class="fas fa-plus-circle"></i> 🍌 СОЗДАТЬ ИГРУ
                         </button>
                     </div>
 
@@ -468,26 +478,26 @@
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <div class="stat-value" id="totalPlayers">0</div>
-                                <div>Игроков</div>
+                                <div>🍌 Игроков</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-value" id="answeredCount">0</div>
-                                <div>Ответили</div>
+                                <div>✅ Ответили</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-value" id="correctCount">0</div>
-                                <div>Правильно</div>
+                                <div>⭐ Правильно</div>
                             </div>
                             <div class="stat-card">
                                 <div class="stat-value" id="wrongCount">0</div>
-                                <div>Неправильно</div>
+                                <div>❌ Неправильно</div>
                             </div>
                         </div>
                         
                         <div class="info-block">
                             <div class="info-row">
-                                <span>Текущий вопрос:</span>
-                                <span class="info-value" id="currentQ">0/5</span>
+                                <span>🍌 Текущий вопрос:</span>
+                                <span class="info-value" id="currentQ">0/10</span>
                             </div>
                         </div>
                     </div>
@@ -498,7 +508,7 @@
                     <div class="players-container">
                         <div id="playersList" class="players-list">
                             <div class="empty-state">
-                                <div class="empty-icon">👤</div>
+                                <div class="empty-icon">🍌</div>
                                 <p>Ожидание игроков...</p>
                             </div>
                         </div>
@@ -517,9 +527,12 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         РЕЖИМ ПРЕЗЕНТАЦИИ
+         ═══════════════════════════════════════════════════════════════════════ -->
     <div id="presentationMode">
         <div class="presentation-header">
-            <span>🎯 ВОПРОС <span id="presQNum">1</span>/5</span>
+            <span>🍌 ВОПРОС <span id="presQNum">1</span>/10</span>
             <span>Ответили: <span id="presAnswered">0</span> | Правильно: <span id="presCorrect">0</span></span>
         </div>
         <div class="presentation-content">
@@ -527,7 +540,7 @@
                 <h2 id="presQuestionText"></h2>
                 <div class="stats-box">
                     <span id="presAnsweredBig">0</span> из <span id="presTotalBig">0</span> ответили<br>
-                    <span style="color: var(--secondary-color);" id="presCorrectBig">0</span> правильно
+                    <span id="presCorrectBig">0</span> правильно
                 </div>
             </div>
         </div>
@@ -538,14 +551,19 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════════════
-        // МАССИВ ВОПРОСОВ - ЗДЕСЬ МЕНЯТЬ ВОПРОСЫ ДЛЯ НОВОЙ ВИКТОРИНЫ
+        // 10 ВОПРОСОВ О БАНАНАХ
         // ═══════════════════════════════════════════════════════════════════════
         const QUESTIONS = [
-            { id: 1, text: "Вопрос 1?", options: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"], correct: 0, points: 1, difficulty: "easy" },
-            { id: 2, text: "Вопрос 2?", options: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"], correct: 1, points: 1, difficulty: "easy" },
-            { id: 3, text: "Вопрос 3?", options: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"], correct: 2, points: 1, difficulty: "easy" },
-            { id: 4, text: "Вопрос 4?", options: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"], correct: 3, points: 1, difficulty: "easy" },
-            { id: 5, text: "Вопрос 5?", options: ["Вариант А", "Вариант Б", "Вариант В", "Вариант Г"], correct: 0, points: 1, difficulty: "easy" }
+            { id: 1, text: "🍌 Какого цвета спелый банан?", options: ["Красный", "Зелёный", "Жёлтый", "Синий"], correct: 2, points: 1, difficulty: "easy" },
+            { id: 2, text: "🍌 Банан - это...", options: ["Фрукт", "Овощ", "Ягода", "Орех"], correct: 2, points: 2, difficulty: "medium" },
+            { id: 3, text: "🍌 Сколько калорий в среднем банане?", options: ["50", "100", "150", "200"], correct: 1, points: 2, difficulty: "medium" },
+            { id: 4, text: "🍌 Какая страна производит больше всего бананов?", options: ["Бразилия", "Индия", "Китай", "Эквадор"], correct: 1, points: 3, difficulty: "hard" },
+            { id: 5, text: "🍌 Бананы растут на...", options: ["Деревьях", "Кустах", "Траве", "Лианах"], correct: 2, points: 3, difficulty: "hard" },
+            { id: 6, text: "🍌 Какой витамин особенно богат в бананах?", options: ["Витамин C", "Витамин B6", "Витамин D", "Витамин A"], correct: 1, points: 1, difficulty: "easy" },
+            { id: 7, text: "🍌 Сколько воды в банане?", options: ["50%", "65%", "75%", "85%"], correct: 2, points: 2, difficulty: "medium" },
+            { id: 8, text: "🍌 Как называют зелёный банан для варки?", options: ["Платано", "Маранг", "Буру", "Саба"], correct: 0, points: 3, difficulty: "hard" },
+            { id: 9, text: "🍌 Когда изобрели банановый сплит?", options: ["1904", "1920", "1935", "1948"], correct: 0, points: 3, difficulty: "hard" },
+            { id: 10, text: "🍌 Сколько бананов съедает американец в год?", options: ["10 кг", "12 кг", "15 кг", "18 кг"], correct: 1, points: 2, difficulty: "medium" }
         ];
 
         let gameCode = null;
@@ -588,9 +606,9 @@
         function renderQuestions() {
             const list = document.getElementById('questionsList');
             list.innerHTML = QUESTIONS.map((q, i) => {
-                let difficultyColor = q.difficulty === 'easy' ? '#0f0' : q.difficulty === 'medium' ? 'yellow' : 'red';
+                let difficultyColor = q.difficulty === 'easy' ? '#2E8B57' : q.difficulty === 'medium' ? '#FFA500' : '#DC143C';
                 let difficultyText = q.difficulty.toUpperCase();
-                let status = i === currentQuestionIndex ? '🔴' : i < currentQuestionIndex ? '✅' : '⏳';
+                let status = i === currentQuestionIndex ? '🍌' : i < currentQuestionIndex ? '✅' : '⏳';
                 
                 return `
                     <div class="question-item ${i === currentQuestionIndex ? 'active' : ''}" 
@@ -672,13 +690,13 @@
                 
                 const list = document.getElementById('playersList');
                 if (data.length === 0) {
-                    list.innerHTML = '<div class="empty-state">👤 Ожидание игроков...</div>';
+                    list.innerHTML = '<div class="empty-state">🍌 Ожидание игроков...</div>';
                 } else {
                     list.innerHTML = data.map(p => `
                         <div class="player-card ${p.answered ? 'answered' : ''}">
                             <div class="player-avatar">${p.name[0]}</div>
                             <div class="player-name">${p.name}</div>
-                            <div>🎯 ${p.score || 0}</div>
+                            <div>🍌 ${p.score || 0}</div>
                         </div>
                     `).join('');
                 }
@@ -748,7 +766,7 @@
             document.getElementById('startSection').style.display = 'block';
             document.getElementById('gameControls').classList.add('hidden');
             document.getElementById('gameCode').innerText = '----';
-            document.getElementById('playersList').innerHTML = '<div class="empty-state">👤 Ожидание игроков...</div>';
+            document.getElementById('playersList').innerHTML = '<div class="empty-state">🍌 Ожидание игроков...</div>';
             document.getElementById('answeredCount').innerText = '0';
             document.getElementById('correctCount').innerText = '0';
             document.getElementById('wrongCount').innerText = '0';
