@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍌 Учитель - Банановая викторина</title>
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         ПОДКЛЮЧЕНИЕ БИБЛИОТЕК
+         - font-awesome: иконки
+         - google fonts: шрифты
+         - supabase: работа с базой данных
+         - config.js: наши настройки
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         СТИЛИ - оформление панели учителя (в стиле бананов)
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Neue', cursive;
+            background: #ffe135;
+            color: #5a3e1b;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        #mainInterface {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .teacher-header {
+            background: #fff9c4;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #5a3e1b;
+            flex-shrink: 0;
+        }
+        
+        .header-left h1 {
+            font-size: 1.5rem;
+            color: #5a3e1b;
+        }
+        
+        .game-code-box {
+            background: #ffe135;
+            border: 3px solid #5a3e1b;
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .code-display {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #5a3e1b;
+            letter-spacing: 2px;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .glass-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border: 3px solid #5a3e1b;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #fff9c4;
+            color: #5a3e1b;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .glass-btn:hover {
+            background: #ffe135;
+            box-shadow: 0 0 20px #5a3e1b;
+            transform: translateY(-2px);
+        }
+        
+        .glass-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+        }
+        
+        .left-column, .right-column {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+        }
+        
+        .glass-panel {
+            background: #fff9c4;
+            border: 4px solid #5a3e1b;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .glass-panel h2 {
+            color: #5a3e1b;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .control-buttons .glass-btn {
+            padding: 15px;
+            font-size: 1rem;
+            justify-content: flex-start;
+        }
+        
+        .info-block {
+            background: #ffe135;
+            border: 2px solid #5a3e1b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .info-value {
+            color: #5a3e1b;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .stat-card {
+            background: #ffe135;
+            border: 2px solid #5a3e1b;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .players-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .players-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        
+        .player-card {
+            background: #ffe135;
+            border: 3px solid #5a3e1b;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        
+        .player-card.answered {
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
+        }
+        
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            background: #5a3e1b;
+            color: #ffe135;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+        
+        .questions-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .question-item {
+            background: #ffe135;
+            border: 3px solid #5a3e1b;
+            border-radius: 12px;
+            padding: 15px 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .question-item:hover {
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
+        }
+        
+        .question-item.active {
+            border-color: #ff00ff;
+            background: #fff9c4;
+        }
+        
+        .question-number {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .question-difficulty {
+            font-size: 0.7rem;
+            margin-bottom: 5px;
+        }
+        
+        .question-status {
+            font-size: 1.2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #5a3e1b;
+            opacity: 0.5;
+        }
+        
+        .hidden { display: none; }
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           СТИЛИ ДЛЯ РЕЖИМА ПРЕЗЕНТАЦИИ
+           ═══════════════════════════════════════════════════════════════════ */
+        #presentationMode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffe135;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+        
+        #presentationMode.active {
+            display: flex;
+        }
+        
+        .presentation-header {
+            background: #fff9c4;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 4px solid #5a3e1b;
+            font-size: 1.2rem;
+        }
+        
+        .presentation-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .presentation-question {
+            max-width: 900px;
+            width: 100%;
+            background: #fff9c4;
+            border: 6px solid #5a3e1b;
+            border-radius: 60px 60px 30px 30px;
+            padding: 60px;
+            text-align: center;
+            box-shadow: 0 20px 0 #5a3e1b;
+        }
+        
+        .presentation-question h2 {
+            font-size: 4rem;
+            line-height: 1.4;
+            margin-bottom: 40px;
+            color: #5a3e1b;
+        }
+        
+        .stats-box {
+            display: inline-block;
+            background: #ffe135;
+            border: 4px solid #5a3e1b;
+            border-radius: 20px;
+            padding: 20px 40px;
+            margin-top: 30px;
+            font-size: 2rem;
+        }
+        
+        .stats-box span {
+            color: #8b4513;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0 15px;
+        }
+        
+        .presentation-controls {
+            padding: 20px;
+            text-align: center;
+            border-top: 4px solid #5a3e1b;
+        }
+    </style>
+</head>
+<body>
+    <div id="mainInterface">
+        <header class="teacher-header">
+            <div class="header-left">
+                <h1>🍌 ПАНЕЛЬ УЧИТЕЛЯ (БАНАНЫ)</h1>
+            </div>
+            <div class="game-code-box">
+                <span>🍌 КОД:</span>
+                <div id="gameCode" class="code-display">----</div>
+                <a href="index.html" class="glass-btn">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="left-column">
+                <div class="glass-panel">
+                    <h2><i class="fas fa-gamepad"></i> УПРАВЛЕНИЕ</h2>
+                    
+                    <div id="startSection">
+                        <button onclick="createGame()" class="glass-btn control-buttons">
+                            <i class="fas fa-plus-circle"></i> 🍌 СОЗДАТЬ ИГРУ
+                        </button>
+                    </div>
+
+                    <div id="gameControls" class="hidden">
+                        <div class="control-buttons">
+                            <button onclick="showQuestionOnBoard(0)" id="showFirstBtn" class="glass-btn">
+                                <i class="fas fa-play"></i> ПОКАЗАТЬ ВОПРОС 1
+                            </button>
+                            <button onclick="showAnswerOnBoard()" id="showAnswerBtn" class="glass-btn" disabled>
+                                <i class="fas fa-check-circle"></i> ПОКАЗАТЬ ОТВЕТ
+                            </button>
+                            <button onclick="nextQuestion()" id="nextBtn" class="glass-btn" disabled>
+                                <i class="fas fa-forward"></i> СЛЕДУЮЩИЙ
+                            </button>
+                            <button onclick="finishGame()" class="glass-btn">
+                                <i class="fas fa-flag-checkered"></i> ЗАВЕРШИТЬ ИГРУ
+                            </button>
+                            <button onclick="resetGame()" class="glass-btn">
+                                <i class="fas fa-redo"></i> СБРОСИТЬ
+                            </button>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalPlayers">0</div>
+                                <div>Игроков</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="answeredCount">0</div>
+                                <div>Ответили</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="correctCount">0</div>
+                                <div>Правильно</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="wrongCount">0</div>
+                                <div>Неправильно</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-block">
+                            <div class="info-row">
+                                <span>Текущий вопрос:</span>
+                                <span class="info-value" id="currentQ">0/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-panel" style="flex:1;">
+                    <h2><i class="fas fa-users"></i> УЧАСТНИКИ</h2>
+                    <div class="players-container">
+                        <div id="playersList" class="players-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">🍌</div>
+                                <p>Ожидание игроков...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="glass-panel">
+                    <h2><i class="fas fa-list-ol"></i> ВОПРОСЫ</h2>
+                    <div class="questions-container">
+                        <div id="questionsList" class="questions-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         РЕЖИМ ПРЕЗЕНТАЦИИ
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="presentationMode">
+        <div class="presentation-header">
+            <span>🍌 ВОПРОС <span id="presQNum">1</span>/10</span>
+            <span>Ответили: <span id="presAnswered">0</span> | Правильно: <span id="presCorrect">0</span></span>
+        </div>
+        <div class="presentation-content">
+            <div class="presentation-question">
+                <h2 id="presQuestionText"></h2>
+                <div class="stats-box">
+                    <span id="presAnsweredBig">0</span> из <span id="presTotalBig">0</span> ответили<br>
+                    <span style="color: #8b4513;" id="presCorrectBig">0</span> правильно
+                </div>
+            </div>
+        </div>
+        <div class="presentation-controls">
+            <button class="glass-btn" onclick="closePresentation()">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        // МАССИВ ВОПРОСОВ - 10 вопросов о бананах
+        // ═══════════════════════════════════════════════════════════════════════
+        const QUESTIONS = [
+            { id: 1, text: "🍌 Какого цвета спелый банан?", options: ["Красный", "Зелёный", "Жёлтый", "Синий"], correct: 2, points: 1, difficulty: "easy" },
+            { id: 2, text: "🍌 Банан - это...", options: ["Фрукт", "Овощ", "Ягода", "Орех"], correct: 2, points: 2, difficulty: "medium" },
+            { id: 3, text: "🍌 Сколько в среднем калорий в одном банане?", options: ["50", "100", "150", "200"], correct: 1, points: 2, difficulty: "medium" },
+            { id: 4, text: "🍌 Какая страна является крупнейшим производителем бананов?", options: ["Бразилия", "Индия", "Китай", "Эквадор"], correct: 1, points: 3, difficulty: "hard" },
+            { id: 5, text: "🍌 Бананы растут на...", options: ["Деревьях", "Кустах", "Траве", "Лианах"], correct: 2, points: 3, difficulty: "hard" },
+            { id: 6, text: "🍌 Какой витамин особенно богат в бананах?", options: ["Витамин C", "Витамин B6", "Витамин D", "Витамин A"], correct: 1, points: 1, difficulty: "easy" },
+            { id: 7, text: "🍌 Сколько воды содержится в банане?", options: ["50%", "65%", "75%", "85%"], correct: 2, points: 2, difficulty: "medium" },
+            { id: 8, text: "🍌 Как называется зелёный банан, который варят?", options: ["Платано", "Маранг", "Буру", "Саба"], correct: 0, points: 3, difficulty: "hard" },
+            { id: 9, text: "🍌 В каком году был изобретён банановый сплит?", options: ["1904", "1920", "1935", "1948"], correct: 0, points: 3, difficulty: "hard" },
+            { id: 10, text: "🍌 Сколько бананов съедает средний американец в год?", options: ["10 кг", "12 кг", "15 кг", "18 кг"], correct: 1, points: 2, difficulty: "medium" }
+        ];
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        // ═══════════════════════════════════════════════════════════════════════
+        let gameCode = null;
+        let currentQuestionIndex = 0;
+        let pollInterval = null;
+        let statsInterval = null;
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // ФУНКЦИЯ: createGame() - создание новой игры
+        // ═══════════════════════════════════════════════════════════════════════
+        async function createGame() {
+            try {
+                const code = Math.floor(10000000 + Math.random() * 90000000).toString();
+                
+                const { error } = await SB
+                    .from('games')
+                    .insert({ 
+                        code: code, 
+                        quiz_id: QUIZ_ID,           // ← ВАЖНО: добавляем ID викторины
+                        created_at: Date.now(), 
+                        status: 'waiting',
+                        current_question: 0
+                    });
+                
+                if (error) throw error;
+                
+                gameCode = code;
+                
+                document.getElementById('startSection').style.display = 'none';
+                document.getElementById('gameControls').classList.remove('hidden');
+                document.getElementById('gameCode').innerText = code;
+                document.getElementById('currentQ').innerText = '0/' + QUESTIONS.length;
+                
+                renderQuestions();
+                startPolling();
+                startStatsPolling();
+                
+            } catch (e) {
+                alert('Ошибка: ' + e.message);
+            }
+        }
+
+        function renderQuestions() {
+            const list = document.getElementById('questionsList');
+            list.innerHTML = QUESTIONS.map((q, i) => {
+                let difficultyColor = q.difficulty === 'easy' ? '#00aa00' : q.difficulty === 'medium' ? '#aa5500' : '#aa0000';
+                let difficultyText = q.difficulty.toUpperCase();
+                let status = i === currentQuestionIndex ? '🔴' : i < currentQuestionIndex ? '✅' : '⏳';
+                
+                return `
+                    <div class="question-item ${i === currentQuestionIndex ? 'active' : ''}" 
+                         onclick="showQuestionOnBoard(${i})">
+                        <div class="question-number">${i+1}</div>
+                        <div class="question-difficulty" style="color: ${difficultyColor}">${difficultyText}</div>
+                        <div class="question-status">${status}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function showQuestionOnBoard(index) {
+            currentQuestionIndex = index;
+            renderQuestions();
+            
+            const q = QUESTIONS[index];
+            
+            await SB
+                .from('games')
+                .update({ 
+                    status: 'active', 
+                    current_question: q.id 
+                })
+                .eq('code', gameCode);
+            
+            document.getElementById('presQNum').innerText = index + 1;
+            document.getElementById('presQuestionText').innerText = q.text;
+            
+            document.getElementById('presentationMode').classList.add('active');
+            document.getElementById('showAnswerBtn').disabled = false;
+            document.getElementById('nextBtn').disabled = true;
+            
+            await updateStats();
+        }
+
+        function showAnswerOnBoard() {
+            document.getElementById('showAnswerBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex + 1 < QUESTIONS.length) {
+                showQuestionOnBoard(currentQuestionIndex + 1);
+            } else {
+                alert('🎉 Все вопросы пройдены!');
+                closePresentation();
+            }
+        }
+
+        async function finishGame() {
+            if (!gameCode) return;
+            
+            await SB
+                .from('games')
+                .update({ status: 'finished' })
+                .eq('code', gameCode);
+            
+            alert('✅ Игра завершена! Ученики увидят результаты.');
+            resetGame();
+        }
+
+        function closePresentation() {
+            document.getElementById('presentationMode').classList.remove('active');
+        }
+
+        async function updatePlayers() {
+            if (!gameCode) return;
+            
+            try {
+                const { data, error } = await SB
+                    .from('players')
+                    .select('*')
+                    .eq('game_code', gameCode);
+                
+                if (error) throw error;
+                
+                document.getElementById('totalPlayers').innerText = data.length;
+                
+                const list = document.getElementById('playersList');
+                if (data.length === 0) {
+                    list.innerHTML = '<div class="empty-state">🍌 Ожидание игроков...</div>';
+                } else {
+                    list.innerHTML = data.map(p => `
+                        <div class="player-card ${p.answered ? 'answered' : ''}">
+                            <div class="player-avatar">${p.name[0]}</div>
+                            <div class="player-name">${p.name}</div>
+                            <div>🍌 ${p.score || 0}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Ошибка обновления игроков:', e);
+            }
+        }
+
+        async function updateStats() {
+            if (!gameCode || currentQuestionIndex < 0) return;
+            
+            try {
+                const currentQuestionId = QUESTIONS[currentQuestionIndex].id;
+                
+                const { data: answers, error } = await SB
+                    .from('answers')
+                    .select('*')
+                    .eq('game_code', gameCode)
+                    .eq('question_id', currentQuestionId);
+                
+                if (error) throw error;
+                
+                const answeredCount = answers?.length || 0;
+                const correctCount = answers?.filter(a => a.is_correct).length || 0;
+                const wrongCount = answeredCount - correctCount;
+                
+                const { data: players } = await SB
+                    .from('players')
+                    .select('*')
+                    .eq('game_code', gameCode);
+                
+                const totalPlayers = players?.length || 0;
+                
+                document.getElementById('answeredCount').innerText = answeredCount;
+                document.getElementById('correctCount').innerText = correctCount;
+                document.getElementById('wrongCount').innerText = wrongCount;
+                
+                if (document.getElementById('presentationMode').classList.contains('active')) {
+                    document.getElementById('presAnswered').innerText = answeredCount;
+                    document.getElementById('presCorrect').innerText = correctCount;
+                    document.getElementById('presAnsweredBig').innerText = answeredCount;
+                    document.getElementById('presCorrectBig').innerText = correctCount;
+                    document.getElementById('presTotalBig').innerText = totalPlayers;
+                }
+            } catch (e) {
+                console.error('Ошибка обновления статистики:', e);
+            }
+        }
+
+        function startPolling() {
+            updatePlayers();
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(updatePlayers, 2000);
+        }
+
+        function startStatsPolling() {
+            updateStats();
+            if (statsInterval) clearInterval(statsInterval);
+            statsInterval = setInterval(updateStats, 2000);
+        }
+
+        function resetGame() {
+            if (pollInterval) clearInterval(pollInterval);
+            if (statsInterval) clearInterval(statsInterval);
+            gameCode = null;
+            currentQuestionIndex = 0;
+            document.getElementById('startSection').style.display = 'block';
+            document.getElementById('gameControls').classList.add('hidden');
+            document.getElementById('gameCode').innerText = '----';
+            document.getElementById('playersList').innerHTML = '<div class="empty-state">🍌 Ожидание игроков...</div>';
+            document.getElementById('answeredCount').innerText = '0';
+            document.getElementById('correctCount').innerText = '0';
+            document.getElementById('wrongCount').innerText = '0';
+            renderQuestions();
+            closePresentation();
+        }
+    </script>
+</body>
+</html>
